@@ -42,8 +42,9 @@ commands:
   build: bun run build
   typecheck: bun run typecheck
 ci:
-  workflows: []                  # NONE — Vercel build is the only gate
-  deploy: vercel.json
+  workflows: [deploy.yml]        # no ci.yml yet; deploy.yml typechecks before shipping
+  runner: ubuntu-latest
+  deploy: push main -> gate -> vercel build/deploy --prod -> tag vX.Y.Z + GitHub release
 security:
   sensitive_paths:
     - src/lib/api.ts             # CSRF seeding + credentials: include
