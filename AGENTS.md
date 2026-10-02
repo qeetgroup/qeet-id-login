@@ -37,9 +37,10 @@ Product-level flow narratives: `qeet-id-context/FLOWS/`.
 ## Rules
 
 ### 1. Stay stateless
-**No database, no secrets, no server-side session.** Only `NEXT_PUBLIC_*` variables, which are
-inlined at build time and therefore public. If a change needs a secret, it belongs in
-`qeet-id-server`.
+**No database, no secrets, no server-side session.** Configuration is public only:
+`NEXT_PUBLIC_*` (inlined at build time) and the runtime `PUBLIC_API_URL`, which
+`src/lib/public-config.ts` reads per request and serves to the browser via `/public-config.js`.
+If a change needs a secret, it belongs in `qeet-id-server`.
 
 ### 2. Never store a token
 Interactive login uses the backend's **HttpOnly `qe_ls`** cookie; the admin portal uses a separate
@@ -92,9 +93,14 @@ bun run generate:tree
 
 ## What CI enforces
 
-**Nothing — this repository has no CI workflow.** The only gate is the Vercel build
-(`vercel.json` pins `bun install --frozen-lockfile` and `bun run build`). Run `bun run typecheck`
-and `bun run build` yourself before pushing.
+| Workflow · job | Runs |
+|---|---|
+| `ci.yml` · `verify` | `bun run typecheck` + `bun run build` — push to `develop`/`release/**`, PRs to `main`/`develop`/`release/**` |
+| `ci.yml` · `image` | Push to `release/**` only, after `verify`: `ghcr.io/qeetgroup/qeet-id-login:sha-<commit>` (amd64+arm64) for the `qeet-id-deploy` test kit — never an RC number |
+| `deploy.yml` | Push to `main`: typecheck, Vercel production deploy, tag |
+
+The container image (`Dockerfile`, Next `output: "standalone"`) is for the test kit; Vercel
+production does not use it. Health: `GET /healthz`.
 
 ## Before you finish
 

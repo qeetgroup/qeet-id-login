@@ -2,7 +2,7 @@
 // HttpOnly cookies for login and admin-portal sessions, so every request uses
 // `credentials: "include"`. Mutations echo the CSRF double-submit token.
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4001";
+import { getApiBaseUrl } from "@/lib/public-config";
 
 export class ApiError extends Error {
   status: number;
@@ -16,7 +16,7 @@ export class ApiError extends Error {
 }
 
 function apiURL(path: string): string {
-  return new URL(path.replace(/^\//, ""), `${API_BASE_URL}/`).toString();
+  return new URL(path.replace(/^\//, ""), `${getApiBaseUrl()}/`).toString();
 }
 
 function readCookie(name: string): string | null {
