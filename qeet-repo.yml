@@ -45,7 +45,7 @@ ci:
   workflows: [ci.yml, deploy.yml]
   jobs: [verify, image, deploy]   # verify = typecheck + build (push develop/release/**, PRs)
   runner: ubuntu-latest
-  deploy: push main -> gate -> vercel build/deploy --prod -> tag vX.Y.Z + GitHub release
+  deploy: push main -> gate -> vercel build/deploy --prod -> tag vX.Y.Z + GitHub release (release/x.y.z merge -> exactly vx.y.z; job runs only on main)
   release_image: "ci.yml job `image` — push to release/** after verify: ghcr.io/qeetgroup/qeet-id-login:sha-<commit>, linux/amd64+arm64 (consumed by the qeet-id-deploy test kit)"
 container:
   dockerfile: Dockerfile          # Next standalone server; not used by Vercel production
